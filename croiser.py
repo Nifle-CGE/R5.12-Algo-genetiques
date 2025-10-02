@@ -1,7 +1,7 @@
 import random
 
 
-def croiser_ordre(villes, tour1, tour2): # Très similaire à deux découpes
+def croiser_ordre(villes, tour1, tour2):  # Très similaire à deux découpes
     n = len(tour1)
     i, j = sorted(random.sample(range(n), 2))
 
@@ -18,7 +18,7 @@ def croiser_ordre(villes, tour1, tour2): # Très similaire à deux découpes
     return enfant
 
 
-def croiser_ordre_modifie(villes, tour1, tour2): # Variante de croiser_ordre et c'est comme si on faisait une découpe
+def croiser_ordre_modifie(villes, tour1, tour2):  # Variante de croiser_ordre et c'est comme si on faisait une découpe
     n = len(tour1)
     i = random.randint(0, n - 1)
 
@@ -66,6 +66,5 @@ def croiser_grefenstette(villes, tour1, tour2):
         for idx in range(n):
             edge_list[t[idx]].add(t[(idx - 1) % n])
             edge_list[t[idx]].add(t[(idx + 1) % n])
-            
 
     return enfant

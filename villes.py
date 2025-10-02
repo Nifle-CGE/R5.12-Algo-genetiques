@@ -3,6 +3,7 @@ import random
 import time
 
 import matplotlib.pyplot as plt
+from numba import jit
 
 
 def villes_aleatoires(n: int, seed=None) -> list[tuple[float, float]]:
@@ -28,7 +29,7 @@ def villes_en_cercle(n: int) -> list[tuple[float, float]]:
     return villes
 
 
-def villes_defi_250() -> list[tuple[float, float]]: # a battre 12.130 en 2mn avec 5 * nb_villes
+def villes_defi_250() -> list[tuple[float, float]]:  # a battre 12.130 en 2mn avec 5 * nb_villes
     villes = []
     with open("defi250.csv", "r") as f:
         data = f.readlines()
