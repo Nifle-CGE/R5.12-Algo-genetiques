@@ -28,8 +28,11 @@ def algorithme_genetique(
             parent1, parent2 = random.sample(selection, 2)
             enfant = croiser(villes, parent1, parent2)
 
-            if random.random() < proba_mutation:
-                muter(villes, enfant)
+            mutation = proba_mutation
+            while mutation > 0:  # si proba_mutation > 1, faire plusieurs mutations
+                if random.random() < mutation:
+                    muter(villes, enfant)
+                mutation -= 1
 
             nouvelle_population.append(enfant)
 
@@ -42,8 +45,7 @@ def algorithme_genetique(
             evolution.append((meilleur_tour, distance_totale(villes, meilleur_tour)))
 
         # si pas d'évolution depuis 10 générations, doubler la probabilité de mutation
-        if proba_mutation < 1 and len(evolution) > 10 and evolution[-1][1] >= evolution[-10][1]:
-            print("Pas d'évolution depuis 10 générations, augmentation de la probabilité de mutation")
+        if len(evolution) > 10 and evolution[-1][1] >= evolution[-10][1]:
             proba_mutation *= 2
 
     meilleur_tour = min(population, key=lambda tour: distance_totale(villes, tour))
