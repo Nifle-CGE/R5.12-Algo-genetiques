@@ -42,7 +42,7 @@ def algorithme_genetique(
             evolution.append((meilleur_tour, distance_totale(villes, meilleur_tour)))
 
         # si pas d'évolution depuis 10 générations, doubler la probabilité de mutation
-        if len(evolution) > 10 and evolution[-1][1] >= evolution[-10][1]:
+        if proba_mutation < 1 and len(evolution) > 10 and evolution[-1][1] >= evolution[-10][1]:
             print("Pas d'évolution depuis 10 générations, augmentation de la probabilité de mutation")
             proba_mutation *= 2
 
