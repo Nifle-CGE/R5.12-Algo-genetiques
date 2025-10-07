@@ -3,7 +3,6 @@ import random
 import time
 
 import matplotlib.pyplot as plt
-from numba import jit
 
 
 def villes_aleatoires(n: int, seed=None) -> list[tuple[float, float]]:

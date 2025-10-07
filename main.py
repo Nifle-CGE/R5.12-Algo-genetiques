@@ -28,7 +28,7 @@ def comparatif_methodes(villes, taille_population, temps_dexecution, proba_mutat
                     selectionner=lambda villes, population: s(villes, population, n=len(population) // 2),
                     croiser=c,
                     muter=m,
-                    montrer_evolution=True
+                    montrer_evolution=montrer_evolution
                 )
 
                 print(f" | Meilleure distance totale = {score} après {generations} générations")

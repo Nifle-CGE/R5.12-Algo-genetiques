@@ -1,7 +1,5 @@
 import random
 
-from numba import jit
-
 from villes import distance
 
 
