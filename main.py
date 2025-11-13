@@ -12,7 +12,7 @@ CROISEURS = (croiser_ordre, croiser_cycle, croiser_ordre_modifie)
 MUTATEURS = (muter_echange,)
 
 
-def comparatif_methodes(villes, taille_population, temps_dexecution, proba_mutation, montrer_evolution):
+def comparatif_methodes(taille_population, temps_dexecution, proba_mutation):
     results = []
     print("\nComparaison des méthodes génétiques :\n")
 
@@ -20,18 +20,16 @@ def comparatif_methodes(villes, taille_population, temps_dexecution, proba_mutat
         for c in CROISEURS:
             for m in MUTATEURS:
                 print(f"Test avec {s.__name__}, {c.__name__}, {m.__name__}", end="")
-                tour, score, generations, evolution = algorithme_genetique(
-                    villes,
+                tour, generations, evolution = algorithme_genetique(
                     taille_population=taille_population,
                     temps_dexecution=temps_dexecution,
                     proba_mutation=proba_mutation,
-                    selectionner=lambda villes, population: s(villes, population, n=len(population) // 2),
+                    selectionner=lambda population: s(population, n=len(population) // 2),
                     croiser=c,
-                    muter=m,
-                    montrer_evolution=montrer_evolution
+                    muter=m
                 )
 
-                print(f" | Meilleure distance totale = {score} après {generations} générations")
+                print(f" | Meilleure distance totale = {tour.distance} après {generations} générations")
 
 
 def demander(options, default=None):
@@ -63,9 +61,10 @@ def demander_type(prompt, type_cast, default=None):
             print(f"Entrée invalide. Veuillez entrer une valeur de type {type_cast.__name__}.")
 
 
-def afficher_tours(villes, evolution):
-    x = [ville[0] for ville in villes]
-    y = [ville[1] for ville in villes]
+def afficher_tours(evolution: list[Tour]):
+    villes = Villes().villes
+    x = [ville.x for ville in villes]
+    y = [ville.y for ville in villes]
 
     fig = plt.figure(3, figsize=(8, 8))
 
@@ -77,12 +76,13 @@ def afficher_tours(villes, evolution):
         tour_line.set_data([], [])
         return tour_line,
 
-    def update(frame):
-        tour, _ = evolution[frame]
-        tour_x = [villes[i][0] for i in tour] + [villes[tour[0]][0]]
-        tour_y = [villes[i][1] for i in tour] + [villes[tour[0]][1]]
+    def update(frame: int):
+        tour: Tour = evolution[frame]
+        tour_sequence: list[int] = tour.sequence
+        tour_x = [villes[i].x for i in tour_sequence] + [villes[tour_sequence[0]].x]
+        tour_y = [villes[i].y for i in tour_sequence] + [villes[tour_sequence[0]].y]
         tour_line.set_data(tour_x, tour_y)
-        plt.title(f"Génération {frame + 1} - Distance totale: {distance_totale(villes, tour):.2f}")
+        plt.title(f"Génération {frame + 1} - Distance totale: {tour.distance:.2f}")
         return tour_line,
 
     ani = FuncAnimation(fig, update, frames=len(evolution), init_func=init, blit=True, repeat=False)
@@ -91,9 +91,9 @@ def afficher_tours(villes, evolution):
     ani.save(f"./images/evolution_{int(time.time())}.mp4", writer='ffmpeg', fps=30)
 
 
-def afficher_evolution(evolution):
-    distances = [score for _, score in evolution]
-    fitness = [1 / score for _, score in evolution]
+def afficher_evolution(evolution: list[Tour]):
+    distances = [tour.distance for tour in evolution]
+    fitness = [1 / tour.distance for tour in evolution]
     plt.figure(1, figsize=(10, 5))
     plt.plot(distances, color='blue')
     plt.title("Évolution de la distance totale au fil des générations")
@@ -133,30 +133,28 @@ def main():
     mode_genetique = demander(options_mode_genetique, default=0)
 
     if mode_genetique == "Comparaison des méthodes":
-        comparatif_methodes(villes, taille_population, temps_dexecution, proba_mutation, montrer_evolution)
+        comparatif_methodes(taille_population, temps_dexecution, proba_mutation)
     else:
         methode_selection = demander(list(map(lambda x: x.__name__, SELECTIONNEURS)), default=0)
         methode_croisement = demander(list(map(lambda x: x.__name__, CROISEURS)), default=0)
         methode_mutation = demander(list(map(lambda x: x.__name__, MUTATEURS)), default=0)
 
-        tour, score, generations, evolution = algorithme_genetique(
-            villes,
+        tour, generations, evolution = algorithme_genetique(
             taille_population=taille_population,
             temps_dexecution=temps_dexecution,
             proba_mutation=proba_mutation,
-            selectionner=lambda villes, population: globals()[methode_selection](villes, population, n=len(population) // 2),
+            selectionner=lambda population: globals()[methode_selection](population, n=len(population) // 2),
             croiser=globals()[methode_croisement],
-            muter=globals()[methode_mutation],
-            montrer_evolution=montrer_evolution
+            muter=globals()[methode_mutation]
         )
 
         print(f"\nRésultat final après {generations} générations :")
-        print(f"Meilleure distance totale = {score}\n")
+        print(f"Meilleure distance totale = {tour.distance}\n")
 
         while True:
             analyse = demander(["Afficher l'évolution des tours", "Afficher le graphique de l'évolution", "Quitter"], default=2)
             if analyse == "Afficher l'évolution des tours":
-                afficher_tours(villes, evolution)
+                afficher_tours(evolution)
             elif analyse == "Afficher le graphique de l'évolution":
                 afficher_evolution(evolution)
             else:

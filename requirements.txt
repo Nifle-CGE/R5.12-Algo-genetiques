@@ -1,2 +1,4 @@
+cprofilev
 matplotlib
 numpy
+point2d
