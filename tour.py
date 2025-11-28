@@ -1,8 +1,6 @@
 import random
 
-from point2d import Point2D
-
-from villes import Villes, distance
+from villes import Villes
 
 
 class Tour():
@@ -11,12 +9,12 @@ class Tour():
         self.distance = self.calculer_distance()
 
     def calculer_distance(self) -> float:
-        villes = Villes().villes
+        villes = Villes()
         total = 0.
-        for i in range(len(self.sequence)):
-            ville1 = villes[self.sequence[i]]
-            ville2 = villes[self.sequence[(i + 1) % len(self.sequence)]]
-            total += distance(ville1, ville2)
+        for i in range(villes.n - 1):
+            total += villes.distance_matrix[self.sequence[i]][self.sequence[i + 1]]
+
+        total += villes.distance_matrix[self.sequence[-1]][self.sequence[0]]
 
         return total
 

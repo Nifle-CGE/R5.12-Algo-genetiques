@@ -13,8 +13,7 @@ def algorithme_genetique(
             muter,
         ) -> tuple[Tour, int, list[Tour]]:
 
-    n = len(Villes().villes)
-    population = [Tour(tour_aleatoire(n)) for _ in range(taille_population)]
+    population = [Tour(tour_aleatoire(Villes().n)) for _ in range(taille_population)]
 
     start = time.perf_counter()
     generations = 0

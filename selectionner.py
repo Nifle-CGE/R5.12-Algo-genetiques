@@ -19,7 +19,7 @@ def selection_roulette(population: list[Tour], n: int):
 
 def selection_tournoi(population: list[Tour], n: int):
     selectionnes = []
-    while len(selectionnes) < n:
+    for _ in range(n):
         candidat1, candidat2 = random.sample(population, 2)
         if candidat1.distance < candidat2.distance:
             selectionnes.append(candidat1)

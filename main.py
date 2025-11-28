@@ -1,3 +1,5 @@
+import cProfile
+
 from matplotlib.animation import FuncAnimation
 
 from croiser import *
@@ -13,7 +15,6 @@ MUTATEURS = (muter_echange,)
 
 
 def comparatif_methodes(taille_population, temps_dexecution, proba_mutation):
-    results = []
     print("\nComparaison des méthodes génétiques :\n")
 
     for s in SELECTIONNEURS:
@@ -63,8 +64,8 @@ def demander_type(prompt, type_cast, default=None):
 
 def afficher_tours(evolution: list[Tour]):
     villes = Villes().villes
-    x = [ville.x for ville in villes]
-    y = [ville.y for ville in villes]
+    x = [ville[0] for ville in villes]
+    y = [ville[1] for ville in villes]
 
     fig = plt.figure(3, figsize=(8, 8))
 
@@ -79,9 +80,10 @@ def afficher_tours(evolution: list[Tour]):
     def update(frame: int):
         tour: Tour = evolution[frame]
         tour_sequence: list[int] = tour.sequence
-        tour_x = [villes[i].x for i in tour_sequence] + [villes[tour_sequence[0]].x]
-        tour_y = [villes[i].y for i in tour_sequence] + [villes[tour_sequence[0]].y]
+        tour_x = [villes[i][0] for i in tour_sequence] + [villes[tour_sequence[0]][0]]
+        tour_y = [villes[i][1] for i in tour_sequence] + [villes[tour_sequence[0]][1]]
         tour_line.set_data(tour_x, tour_y)
+        plt.scatter(x, y, color='blue')
         plt.title(f"Génération {frame + 1} - Distance totale: {tour.distance:.2f}")
         return tour_line,
 
@@ -115,12 +117,12 @@ def main():
     mode_villes = demander(options_mode_villes, default=0)
     if mode_villes == "Villes aléatoires":
         n_villes = demander_type("Nombre de villes", int, default=30)
-        villes = villes_aleatoires(n_villes)
+        villes_aleatoires(n_villes)
     elif mode_villes == "Villes en cercle":
         n_villes = demander_type("Nombre de villes", int, default=30)
-        villes = villes_en_cercle(n_villes)
+        villes_en_cercle(n_villes)
     else:
-        villes = villes_defi_250()
+        villes_defi_250()
 
     taille_population = demander_type("Taille de la population", int, default=200)
     temps_dexecution = demander_type("Temps d'exécution (secondes)", float, default=10.0)
@@ -151,6 +153,9 @@ def main():
         print(f"\nRésultat final après {generations} générations :")
         print(f"Meilleure distance totale = {tour.distance}\n")
 
+        if not montrer_evolution:
+            return
+
         while True:
             analyse = demander(["Afficher l'évolution des tours", "Afficher le graphique de l'évolution", "Quitter"], default=2)
             if analyse == "Afficher l'évolution des tours":
@@ -162,4 +167,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    with cProfile.Profile() as pr:
+        main()
+
+    pr.dump_stats("profiling_results.prof")
