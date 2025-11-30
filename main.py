@@ -1,5 +1,7 @@
 import cProfile
+import time
 
+import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 from croiser import *
@@ -9,12 +11,18 @@ from selectionner import *
 from tour import *
 from villes import *
 
-SELECTIONNEURS = (selection_moitie, selection_tournoi, selection_roulette, selection_uniforme)
-CROISEURS = (croiser_ordre, croiser_cycle, croiser_ordre_modifie)
-MUTATEURS = (muter_echange,)
+# tuples des fonctions disponibles (utilisées pour l'interface)
+SELECTIONNEURS = (selection_moitie, selection_1v1, selection_roulette, selection_uniforme)
+CROISEURS = (croiser_ordre, croiser_cycle, croiser_ordre_modifie, croiser_grefenstette)
+MUTATEURS = (muter_echange, muter_operateur_2_opt, muter_insertion)
 
 
 def comparatif_methodes(taille_population, temps_dexecution, proba_mutation):
+    """Teste toutes les combinaisons de sélection / croisement / mutation.
+
+    Affiche pour chaque combinaison la meilleure distance obtenue et le
+    nombre de générations nécessaires durant l'exécution limitée en temps.
+    """
     print("\nComparaison des méthodes génétiques :\n")
 
     for s in SELECTIONNEURS:
@@ -34,6 +42,12 @@ def comparatif_methodes(taille_population, temps_dexecution, proba_mutation):
 
 
 def demander(options, default=None):
+    """Affiche une liste d'options et demande un choix utilisateur.
+
+    - `options` : itérable présentant les choix possibles
+    - `default` : index par défaut (None ou entier)
+    Retourne l'élément choisi dans `options`.
+    """
     print("Choisissez :")
     for i, option in enumerate(options):
         print(f"{i + 1}. {option}")
@@ -51,6 +65,10 @@ def demander(options, default=None):
 
 
 def demander_type(prompt, type_cast, default=None):
+    """Demande une valeur à l'utilisateur et la convertit au bon type.
+
+    Boucle jusqu'à obtenir une valeur valide de `type_cast`.
+    """
     while True:
         try:
             if default is not None:
@@ -63,6 +81,10 @@ def demander_type(prompt, type_cast, default=None):
 
 
 def afficher_tours(evolution: list[Tour]):
+    """Crée une animation montrant l'évolution du meilleur tour par génération.
+
+    L'animation est sauvegardée en MP4 dans `./images`.
+    """
     villes = Villes().villes
     x = [ville[0] for ville in villes]
     y = [ville[1] for ville in villes]
@@ -78,6 +100,7 @@ def afficher_tours(evolution: list[Tour]):
         return tour_line,
 
     def update(frame: int):
+        # mise à jour de la ligne représentant le tour courant
         tour: Tour = evolution[frame]
         tour_sequence: list[int] = tour.sequence
         tour_x = [villes[i][0] for i in tour_sequence] + [villes[tour_sequence[0]][0]]
@@ -94,6 +117,7 @@ def afficher_tours(evolution: list[Tour]):
 
 
 def afficher_evolution(evolution: list[Tour]):
+    """Trace les courbes de distance et de fitness au fil des générations."""
     distances = [tour.distance for tour in evolution]
     fitness = [1 / tour.distance for tour in evolution]
     plt.figure(1, figsize=(10, 5))
@@ -113,6 +137,11 @@ def afficher_evolution(evolution: list[Tour]):
 
 
 def main():
+    """Interface principale pour configurer et lancer l'algorithme.
+
+    Demande à l'utilisateur le mode de génération des villes, les paramètres
+    de l'algorithme, et propose d'afficher les résultats et/ou un comparatif.
+    """
     options_mode_villes = ["Villes aléatoires", "Villes en cercle", "Défi 250 villes"]
     mode_villes = demander(options_mode_villes, default=0)
     if mode_villes == "Villes aléatoires":
