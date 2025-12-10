@@ -18,8 +18,8 @@
   # https://devenv.sh/languages/
   languages.python = {
     enable = true;
-    package = pkgs.python3.withPackages (ps: [
-      ps.tkinter
+    package = pkgs.python3.withPackages (ps: with ps; [
+      tkinter
     ]);
     venv = {
       enable = true;
@@ -27,7 +27,6 @@
         numpy
         matplotlib
         cprofilev
-        tkinter
       '';
     };
   };

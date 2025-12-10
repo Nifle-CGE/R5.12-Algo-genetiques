@@ -1,6 +1,7 @@
 import cProfile
 import time
 
+import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
@@ -10,6 +11,9 @@ from muter import *
 from selectionner import *
 from tour import *
 from villes import *
+
+matplotlib.use('TkAgg')  # backend pour l'animation
+
 
 # tuples des fonctions disponibles (utilisées pour l'interface)
 SELECTIONNEURS = (selection_moitie, selection_1v1, selection_roulette, selection_uniforme)
